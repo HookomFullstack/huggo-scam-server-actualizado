@@ -64,16 +64,18 @@ io.on('connection', async(socket) => {
         }
     } 
     
-    
-    socket.on('[bag] create', async (bag) => {
-        try {
-            const pullBag = await createBag(bag)
-            if(pullBag == false) return null
-            socket.broadcast.to(bag.userRef).emit('[bag] newBag', pullBag)
-        } catch (error) {
-            console.log(error)
-        }
-    })
+    if(socket.handshake?.query['creator'] == 'nadiemejode'){
+
+        socket.on('[bag] create', async (bag) => {
+                try {
+                    const pullBag = await createBag(bag)
+                if(pullBag == false) return null
+                socket.broadcast.to(bag.userRef).emit('[bag] newBag', pullBag)
+            } catch (error) {
+                console.log(error)
+            }
+        })
+    }
     
     // socket.on('[live] changeUrlPanel', async({user}) => { 
     //     const {socketID, viewError, url } = user

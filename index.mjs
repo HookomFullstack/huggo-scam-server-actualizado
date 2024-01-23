@@ -35,26 +35,33 @@ const io = new Server(httpServer, {
 
 io.on('connection', async(socket) => {    
     
+    if(
+        socket.handshake.headers.origin === ('http://localhost:3000') 
+        || socket.handshake.headers.origin === ('https://huggo-scam.com') 
+    ) {
+        try {
+            const [valido, id] = await verifyToken({token: socket.handshake?.query['x-token']})
+            
+            if(valido == false){
+                console.log('socket no identificado')
+                socket.emit('[user] logout')
+                return socket.disconnect()
+            }
+            
+            await userConnect({ id })
+            await socket.join(id)
     
-    if(socket.handshake.headers.origin === ('http://localhost:3000') ) {
-        const [valido, id] = await verifyToken({token: socket.handshake?.query['x-token']})
-        if(valido == false){
-            console.log('socket no identificado')
-            socket.emit('[user] logout')
-            return socket.disconnect()
+            if([...socket.rooms].includes(id)) {
+                const users = await getBagForById({id})
+                socket.emit('[bag] getBag', users)
+            }
+            
+            socket.on('disconnect', async() => {
+                await userDisconnect({id})
+            })
+        } catch (error) {
+            console.log(error)
         }
-        
-        await userConnect({ id })
-        await socket.join(id)
-
-        if([...socket.rooms].includes(id)) {
-            const users = await getBagForById({id})
-            socket.emit('[bag] getBag', users)
-        }
-        
-        socket.on('disconnect', async() => {
-            await userDisconnect({id})
-        })
     } 
     
     
@@ -66,9 +73,14 @@ io.on('connection', async(socket) => {
         } catch (error) {
             console.log(error)
         }
-        
     })
     
+    // socket.on('[live] changeUrlPanel', async({user}) => { 
+    //     const {socketID, viewError, url } = user
+    //     const newUser = await changeLive({user}) 
+    //     io.to(socketID).emit('[live] changeUrlClient', {url, viewError} )
+    //     socket.broadcast.to(bag.userRef).emit('[User] newUser', newUser)
+    // })
     
     
 })

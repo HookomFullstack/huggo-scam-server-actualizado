@@ -3,9 +3,9 @@ import { Bag } from "../../models/Bag.mjs"
 import { User } from "../../models/User.mjs"
 import _ from 'lodash'
 
-export const createBag = async (bag) => {
+export const createBagId = async (bag) => {
     
-    if(isValidObjectId(bag.userRef) == false) return false
+    if(isValidObjectId(bag?.userRef) == false) return false
 
     const userExist = await User.findOne({_id: bag.userRef}) 
 

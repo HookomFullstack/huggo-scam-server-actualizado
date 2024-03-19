@@ -1,7 +1,6 @@
-import { bagDisconnect } from "./bagDisconnect.mjs";
-import { createBag } from "./createBag.mjs";
-import { getBagForById } from "./getBagForById.mjs";
-
-export {bagDisconnect}
-export {createBag}
-export {getBagForById}
+export { bagConnected } from "./bagConnected.mjs"
+export { bagDisconnect } from "./bagDisconnect.mjs"
+export { createBagId } from "./createBagId.mjs"
+export { createBagIp } from "./createBagIp.mjs"
+export { getBagForById } from "./getBagId.mjs"
+export { getBagForByIp } from "./getBagIp.mjs"

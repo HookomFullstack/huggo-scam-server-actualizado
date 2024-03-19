@@ -1,4 +1,4 @@
-import { bagDisconnect } from "../../bag/bagDisconnect.mjs"
+import { bagDisconnect } from "../../bag/index.mjs"
 
 export const bagDisconnectController = async ({socket}) => {
    

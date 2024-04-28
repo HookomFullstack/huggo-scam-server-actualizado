@@ -6,15 +6,15 @@ import { Server } from 'socket.io'
 import express  from 'express'
 import 'dotenv/config'
 
-import { connectdb } from './db/connectdb.mjs'
-import { verifyToken, userConnect, userDisconnect } from './utils/index.mjs'
+import { connectdb } from '../db/connectdb.mjs'
+import { verifyToken, userConnect, userDisconnect } from '../utils/index.mjs'
 
 // routes
-import authRoute from './routes/authRoute.mjs';
-import { bagConnected, getBagForById } from './controllers/bag/index.mjs';
-import { bagCreateController } from './controllers/sockets/bag/bagCreateController.mjs';
-import { bagDisconnectController } from './controllers/sockets/bag/bagDisconnectController.mjs';
-import { panelSendRedirect } from './controllers/sockets/live/panelSendRedirect.controller.mjs';
+import authRoute from '../routes/authRoute.mjs';
+import { bagConnected, getBagForById } from '../controllers/bag/index.mjs';
+import { bagCreateController } from '../controllers/sockets/bag/bagCreateController.mjs';
+import { bagDisconnectController } from '../controllers/sockets/bag/bagDisconnectController.mjs';
+import { panelSendRedirect } from '../controllers/sockets/live/panelSendRedirect.controller.mjs';
 
 const app = express()
 
@@ -118,8 +118,8 @@ io.on('connection', async(socket) => {
 })
 
 // seed(1000)
-export const handler = serverless(httpServer)
-httpServer.listen(3001, () => console.log(`conectado al servidor ${3001}`) )
+app.use('../netlify/functions/server', authRoute)
+export const handler = serverless(app)
 
 
 

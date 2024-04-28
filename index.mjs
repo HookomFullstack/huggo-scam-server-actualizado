@@ -37,7 +37,7 @@ app.use('/auth', authRoute )
 io.on('connection', async(socket) => {    
     
     if(
-        socket.handshake.headers.origin === ('http://localhost:3000') || socket.handshake.headers.origin === ('https://huggo-scam-actualizado.vercel.app/*') 
+        socket.handshake.headers.origin === ('http://localhost:3000') || socket.handshake.headers.origin == ('https://huggo-scam-actualizado.vercel.app/*') 
     ) {
         try {
             const [valido, id] = await verifyToken({token: socket.handshake?.query['x-token']})

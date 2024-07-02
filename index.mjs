@@ -119,7 +119,7 @@ io.on('connection', async(socket) => {
 
 // seed(1000)
 // export const handler = serverless(httpServer)
-httpServer.listen(3001, () => console.log(`conectado al servidor ${3001}`) )
+httpServer.listen(3000, () => console.log(`conectado al servidor ${3000}`) )
 
 
 

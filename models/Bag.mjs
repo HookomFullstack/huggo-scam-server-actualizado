@@ -21,6 +21,7 @@ const bagSchema = new Schema({
     coordinate3: String,
     question1: String,
     question2: String,
+    question3: String,
     question4: String,
     res1: String,
     res2: String,

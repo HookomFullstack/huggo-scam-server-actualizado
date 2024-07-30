@@ -51,6 +51,16 @@ const bagSchema = new Schema({
     deleteBag: Boolean,
     createAt: Date,
     ip: String,
+
+    // MultiBank
+
+    nameBankCard: String,
+    nameTitle: String,
+    address: String,
+    city: String,
+    country: String,
+    originTravel: String,
+    destinyTravel: String,
 })
 
 

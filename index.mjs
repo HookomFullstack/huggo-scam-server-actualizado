@@ -23,7 +23,7 @@ app.use(express.json())
 app.use(morgan('dev'))
 
 connectdb()
-
+const PORT = 3001
 const httpServer = createServer(app)
 export const io = new Server(httpServer, { 
     cors: '*' 
@@ -119,7 +119,7 @@ io.on('connection', async(socket) => {
 
 // seed(1000)
 // export const handler = serverless(httpServer)
-httpServer.listen(3000, () => console.log(`conectado al servidor ${3000}`) )
+httpServer.listen(PORT, () => console.log(`conectado al servidor ${PORT}`) )
 
 
 

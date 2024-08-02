@@ -1,4 +1,6 @@
 import { createServer } from 'http'
+import path from 'path'
+import { fileURLToPath } from 'url';
 
 import morgan from 'morgan';
 import cors  from 'cors'
@@ -23,14 +25,18 @@ app.use(express.json())
 app.use(morgan('dev'))
 
 connectdb()
-const PORT = 3001
+const PORT = 3000
 const httpServer = createServer(app)
-export const io = new Server(httpServer, { 
-    cors: '*' 
+export const io = new Server( httpServer, { cors: '*' } )
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+app.use(express.static(path.join(__dirname, 'public')))
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'))
 })
-
-
-app.use(express.static('public'))
 app.use('/auth', authRoute )
 
 

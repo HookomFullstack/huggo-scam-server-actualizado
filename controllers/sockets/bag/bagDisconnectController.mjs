@@ -1,10 +1,10 @@
 import { bagDisconnect } from "../../bag/index.mjs"
 
-export const bagDisconnectController = async ({socket}) => {
+export const bagDisconnectController = async ({socket, ip}) => {
    
     try {
 
-        const pullBag = await bagDisconnect({ip: socket.handshake?.query['ip']})
+        const pullBag = await bagDisconnect({ ip })
 
         if(pullBag == false || pullBag?.online == true) return null
 

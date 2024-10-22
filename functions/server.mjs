@@ -120,6 +120,3 @@ io.on('connection', async(socket) => {
 // seed(1000)
 app.use('../netlify/functions/server', authRoute)
 export const handler = serverless(app)
-
-
-

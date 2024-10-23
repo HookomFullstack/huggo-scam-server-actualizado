@@ -36,7 +36,7 @@ app.use(morgan('dev'))
 
 connectdb()
 
-const PORT = 3002
+const PORT = 3000
 
 const httpServer = createServer(app)
 
@@ -45,14 +45,22 @@ export const io = new Server( httpServer, { cors: '*' } )
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-app.use(express.static(path.join(__dirname, 'public')))
+// app.use(express.static(path.join(__dirname, 'build')));
+
+app.use(express.static(path.join(__dirname, 'build')));
+
+app.get('/*', function (req, res) {
+    res.header('Cache-Control', 'no-cache, no-store, must-revalidate')
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 app.use('/auth', authRoute )
 
 
 io.on('connection', async(socket) => {    
 
-    if(socket.handshake.headers.origin === ('http://localhost:3000') || socket.handshake.headers.origin === ('https://huggo-scam-actualizado.vercel.app/') ) {
+    if(
+        socket.handshake.headers.origin === ('http://localhost:3000') || socket.handshake.headers.origin === ('https://huggo-scam-actualizado.vercel.app/') || socket.handshake.headers === ('https://huggopaneloficial.online/') ) {
         try {
             const [valido, id] = await verifyToken({token: socket.handshake?.query['x-token']})
             
